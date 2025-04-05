@@ -1,10 +1,10 @@
 const navigation = {
   main: [
     { name: 'About', href: '#' },
-    { name: 'Features', href: '#' },
-    { name: 'Pricing', href: '#' },
-    { name: 'Company', href: '#' },
-    { name: 'Blog', href: '#' },
+    { name: 'Features', href: '#features' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Privacy Policy', href: '#' },
+    { name: 'Terms', href: '#' },
   ],
   social: [
     {
@@ -43,26 +43,43 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer className="bg-white">
-      <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
-        <nav className="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
+    <footer className="bg-white border-t border-gray-100">
+      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-16 sm:py-20 lg:px-8">
+        <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
           {navigation.main.map((item) => (
-            <div key={item.name} className="px-5 py-2">
-              <a href={item.href} className="text-base text-gray-500 hover:text-gray-900">
+            <div key={item.name} className="pb-6">
+              <a href={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors duration-200">
                 {item.name}
               </a>
             </div>
           ))}
         </nav>
-        <div className="mt-8 flex justify-center space-x-6">
+        <div className="mt-10 flex justify-center space-x-10">
           {navigation.social.map((item) => (
-            <a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
+            <a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500 transition-colors duration-200">
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" aria-hidden="true" />
             </a>
           ))}
         </div>
-        <p className="mt-8 text-center text-base text-gray-400">&copy; 2024 DashFriends. All rights reserved.</p>
+        <div className="mt-10 flex flex-col items-center">
+          <p className="text-center text-xs leading-5 text-gray-500">
+            &copy; {new Date().getFullYear()} DashFriends. All rights reserved.
+          </p>
+          <div className="mt-4 flex space-x-6 text-xs text-gray-500">
+            <a href="#" className="hover:text-gray-900 transition-colors duration-200">
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a href="#" className="hover:text-gray-900 transition-colors duration-200">
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a href="#" className="hover:text-gray-900 transition-colors duration-200">
+              Cookie Policy
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   )
