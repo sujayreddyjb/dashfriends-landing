@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,11 +26,14 @@ export default function Header() {
             <a href="#features" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
               Features
             </a>
-            <a href="#testimonials" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
-              Testimonials
+            <a href="#why-us" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
+              Why Us
             </a>
             <a href="#pricing" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
               Pricing
+            </a>
+            <a href="#testimonials" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
+              Testimonials
             </a>
             <div className="flex items-center space-x-4">
               <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors duration-200 px-3 py-2 text-sm font-medium">
@@ -50,6 +55,27 @@ export default function Header() {
           </button>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      <motion.div
+        initial={false}
+        animate={isMenuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="md:hidden overflow-hidden bg-[#0B0B1F]/95 backdrop-blur-lg border-t border-white/10"
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          <a href="#features" className="block px-3 py-2 text-gray-300 hover:text-white transition-colors">Features</a>
+          <a href="#why-us" className="block px-3 py-2 text-gray-300 hover:text-white transition-colors">Why Us</a>
+          <a href="#pricing" className="block px-3 py-2 text-gray-300 hover:text-white transition-colors">Pricing</a>
+          <a href="#testimonials" className="block px-3 py-2 text-gray-300 hover:text-white transition-colors">Testimonials</a>
+          <div className="pt-4 flex flex-col space-y-2">
+            <a href="/login" className="px-3 py-2 text-gray-300 hover:text-white transition-colors">Login</a>
+            <a href="/signup" className="mx-3 py-2 text-center rounded-lg bg-[#4F46E5] text-white hover:bg-[#4338CA] transition-colors">
+              Sign Up
+            </a>
+          </div>
+        </div>
+      </motion.div>
     </header>
   )
 } 
