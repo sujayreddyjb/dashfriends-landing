@@ -1,18 +1,16 @@
 import { useCallback } from 'react';
-import Particles from 'tsparticles';
+import { Engine } from 'tsparticles-engine';
+import { tsParticles } from 'tsparticles';
 import { loadSlim } from 'tsparticles-slim';
 
 const ParticleBackground = () => {
-  const particlesInit = useCallback(async engine => {
+  const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
 
   return (
-    <Particles
-      id="tsparticles"
-      init={particlesInit}
-      className="absolute inset-0"
-      options={{
+    <div id="tsparticles" className="absolute inset-0">
+      {tsParticles.load('tsparticles', {
         background: {
           opacity: 0
         },
@@ -72,8 +70,8 @@ const ParticleBackground = () => {
             }
           }
         }
-      }}
-    />
+      })}
+    </div>
   );
 };
 
