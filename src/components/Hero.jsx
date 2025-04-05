@@ -1,77 +1,99 @@
-export default function Hero() {
+import { motion } from 'framer-motion';
+
+const Hero = () => {
   return (
-    <div className="relative bg-white pt-16 overflow-hidden">
-      <div className="relative pt-16 pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-            <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-              <h1>
-                <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
-                  <span className="block text-gray-900">Track Your Gaming</span>
-                  <span className="block text-primary mt-3">Journey Like Never Before</span>
-                </span>
-              </h1>
-              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                DashFriends helps you track achievements, connect with fellow gamers, and visualize your gaming progress all in one beautiful dashboard.
-              </p>
-              <div className="mt-8 sm:mt-12">
-                <div className="sm:flex sm:justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
-                  <a
-                    href="#"
-                    className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 transform hover:-translate-y-0.5"
-                  >
-                    Get started for free
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 border-2 border-primary text-base font-medium rounded-lg text-primary bg-transparent hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 transform hover:-translate-y-0.5"
-                  >
-                    Live demo
-                    <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
-              <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
-                <div className="relative block w-full bg-white rounded-lg overflow-hidden">
-                  <div className="w-full h-[600px] bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg overflow-hidden">
-                    {/* Dashboard Mockup */}
-                    <div className="relative w-full h-full backdrop-blur-sm p-4">
-                      <div className="absolute inset-0 bg-white/40"></div>
-                      <div className="relative z-10">
-                        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="w-32 h-8 bg-gray-200 rounded animate-pulse"></div>
-                            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
-                          </div>
-                          <div className="space-y-3">
-                            <div className="w-full h-24 bg-gray-200 rounded animate-pulse"></div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-                              <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="bg-white rounded-lg shadow-sm p-4">
-                            <div className="w-full h-40 bg-gray-200 rounded animate-pulse"></div>
-                          </div>
-                          <div className="bg-white rounded-lg shadow-sm p-4">
-                            <div className="w-full h-40 bg-gray-200 rounded animate-pulse"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div className="relative overflow-hidden bg-[#0E0E2C] min-h-screen">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-[#4F46E5] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-[#10B981] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#9333EA] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-4000"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 sm:pt-24 sm:pb-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center"
+        >
+          <motion.h1 
+            className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-8 leading-tight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4F46E5] via-[#9333EA] to-[#10B981] animate-gradient">
+              Track Your Gaming
+            </span>
+            <br />
+            <span className="text-white">
+              Journey Like Never Before
+            </span>
+          </motion.h1>
+          
+          <motion.p 
+            className="text-xl sm:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Track your gaming progress, connect with friends, and elevate your gaming experience with DashFriends.
+          </motion.p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn-primary"
+            >
+              Get started for free
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-white/5 text-white rounded-lg font-semibold text-lg border border-white/10 backdrop-blur-sm 
+                hover:bg-white/10 hover:border-[#4F46E5]/50 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] 
+                transition-all duration-300"
+            >
+              Live demo →
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Dashboard Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-16 relative mx-auto max-w-5xl"
+        >
+          <div className="relative group">
+            {/* Glow effect on hover */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#4F46E5] to-[#9333EA] rounded-xl blur-xl opacity-25 
+              group-hover:opacity-50 transition duration-1000"></div>
+            
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E2C] to-transparent opacity-50 z-10 rounded-xl"></div>
+              <img
+                src="/dashboard-mockup.png"
+                alt="DashFriends Dashboard"
+                className="w-full h-auto rounded-xl shadow-2xl border border-white/10 backdrop-blur-sm"
+              />
+              
+              {/* Floating Elements */}
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#4F46E5] rounded-lg rotate-12 opacity-20 blur-2xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-[#9333EA] rounded-lg -rotate-12 opacity-20 blur-2xl"></div>
+              
+              {/* Animated gradient border */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4F46E5] to-[#9333EA] rounded-xl opacity-0 
+                group-hover:opacity-20 transition duration-500"></div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
-} 
+};
+
+export default Hero; 
