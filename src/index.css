@@ -146,3 +146,17 @@
   @apply bg-white/5 backdrop-blur-md;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
+
+/* Hide dashboard image */
+img[alt="DashFriends Dashboard"],
+img[src*="dashboard"],
+.dashboard-mockup,
+[src="/dashboard-mockup.png"] {
+  display: none !important;
+}
+
+/* Hide any image containers within the hero section */
+.hero-section img,
+section:first-of-type .relative.group img {
+  display: none !important;
+}

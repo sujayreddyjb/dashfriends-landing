@@ -74,33 +74,6 @@ const Hero = () => {
           </motion.div>
         </motion.div>
 
-        {/* Dashboard Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-16 relative mx-auto max-w-5xl"
-        >
-          <div className="relative group">
-            {/* Glow effect on hover */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#4F46E5] to-[#9333EA] rounded-xl blur-xl opacity-25 
-              group-hover:opacity-50 transition duration-1000"></div>
-            
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B1F] via-transparent to-transparent opacity-50 z-10 rounded-xl"></div>
-              <img
-                src="/dashboard-mockup.png"
-                alt="DashFriends Dashboard"
-                className="w-full h-auto rounded-xl shadow-2xl border border-white/10 backdrop-blur-sm"
-              />
-              
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-32 h-32 bg-[#4F46E5] rounded-lg rotate-12 opacity-10 blur-2xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#9333EA] rounded-lg -rotate-12 opacity-10 blur-2xl"></div>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Stats Section */}
         <Stats />
       </div>
