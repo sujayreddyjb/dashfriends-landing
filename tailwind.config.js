@@ -4,10 +4,11 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: '#4F46E5',
+        primary: '#6366f1',
         secondary: '#1E40AF',
       },
       keyframes: {
@@ -30,6 +31,10 @@ export default {
         'pulse-glow': {
           '0%, 100%': { opacity: 0 },
           '50%': { opacity: 0.1 }
+        },
+        shine: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' }
         }
       },
       animation: {
@@ -37,7 +42,8 @@ export default {
         'flow-right': 'flow-right 3s linear infinite',
         'flow-up': 'flow-up 3s linear infinite',
         'flow-down': 'flow-down 3s linear infinite',
-        'pulse-glow': 'pulse-glow 4s ease-in-out infinite'
+        'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
+        shine: 'shine 2s infinite'
       }
     },
   },

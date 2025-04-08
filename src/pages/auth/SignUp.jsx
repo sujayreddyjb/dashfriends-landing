@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const roleOptions = [
   { id: 'pro-gamer', label: 'Pro Gamer', color: 'from-purple-500 to-purple-600' },
@@ -14,6 +14,7 @@ const avatarPresets = [
 ].map(seed => `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`)
 
 export default function SignUp() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -47,8 +48,12 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission
+    // Here you would typically make an API call to create the user account
     console.log('Form submitted:', formData)
+    
+    // For now, we'll simulate a successful signup and redirect to dashboard
+    // In a real application, this would happen after successful API response
+    navigate('/dashboard')
   }
 
   return (
