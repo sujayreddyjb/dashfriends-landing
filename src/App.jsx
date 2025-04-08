@@ -5,22 +5,36 @@ import Header from './components/Header'
 import Hero from './components/Hero'
 import Stats from './components/Stats'
 import Testimonials from './components/Testimonials'
+import Footer from './components/Footer'
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={
-          <main className="bg-[#070818] min-h-screen">
+          <div className="bg-[#070818] min-h-screen">
             <Header />
-            <Hero />
-            <Stats />
-            <Testimonials />
-          </main>
+            <main>
+              <Hero />
+              <Stats />
+              <Testimonials />
+            </main>
+            <Footer />
+          </div>
         } />
-        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signin" element={
+          <div className="bg-[#070818] min-h-screen">
+            <SignIn />
+            <Footer />
+          </div>
+        } />
         <Route path="/login" element={<Navigate to="/signin" replace />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup" element={
+          <div className="bg-[#070818] min-h-screen">
+            <SignUp />
+            <Footer />
+          </div>
+        } />
       </Routes>
     </Router>
   )
