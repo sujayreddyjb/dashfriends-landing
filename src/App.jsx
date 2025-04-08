@@ -25,14 +25,12 @@ export default function App() {
         <Route path="/signin" element={
           <div className="bg-[#070818] min-h-screen">
             <SignIn />
-            <Footer />
           </div>
         } />
         <Route path="/login" element={<Navigate to="/signin" replace />} />
         <Route path="/signup" element={
           <div className="bg-[#070818] min-h-screen">
             <SignUp />
-            <Footer />
           </div>
         } />
       </Routes>
