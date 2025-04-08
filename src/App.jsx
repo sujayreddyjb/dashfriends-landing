@@ -1,26 +1,27 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import SignIn from './pages/auth/SignIn'
+import SignUp from './pages/auth/SignUp'
 import Header from './components/Header'
-import Features from './components/Features'
 import Hero from './components/Hero'
-import Testimonials from './components/Testimonials'
-import Footer from './components/Footer'
-import WhyUs from './components/WhyUs'
 import Stats from './components/Stats'
+import Testimonials from './components/Testimonials'
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen bg-[#0B0B1F]">
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-        <WhyUs />
-        <Stats />
-        <Testimonials />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          <main className="bg-[#070818] min-h-screen">
+            <Header />
+            <Hero />
+            <Stats />
+            <Testimonials />
+          </main>
+        } />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/login" element={<Navigate to="/signin" replace />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </Router>
   )
 }
-
-export default App
