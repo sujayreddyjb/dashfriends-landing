@@ -1,126 +1,95 @@
 import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
-const AnimatedCounter = ({ value, duration = 2000, isDecimal = false }) => {
-  const [count, setCount] = useState(0);
-  const { ref, inView } = useInView({
-    threshold: 0.3,
-    triggerOnce: true,
-  });
+const whyUs = [
+  {
+    title: "Gaming-First Approach",
+    description: "Built by gamers, for gamers. We understand what makes a great gaming community.",
+    icon: "🎮",
+    gradient: "from-purple-500 to-pink-500"
+  },
+  {
+    title: "24/7 Support",
+    description: "Our dedicated support team is always ready to help you with any issues or questions.",
+    icon: "🎯",
+    gradient: "from-yellow-500 to-orange-500"
+  },
+  {
+    title: "Regular Updates",
+    description: "We constantly improve our platform with new features and optimizations.",
+    icon: "⚔️",
+    gradient: "from-blue-500 to-cyan-500"
+  },
+  {
+    title: "Community Events",
+    description: "Participate in exclusive tournaments, giveaways, and community challenges.",
+    icon: "🏆",
+    gradient: "from-green-500 to-teal-500"
+  },
+  {
+    title: "Privacy Focused",
+    description: "Your data is secure with us. We prioritize your privacy and security.",
+    icon: "🛡️",
+    gradient: "from-indigo-500 to-purple-500"
+  },
+  {
+    title: "Cross-Platform",
+    description: "Connect with friends across all gaming platforms seamlessly.",
+    icon: "🎲",
+    gradient: "from-pink-500 to-rose-500"
+  }
+];
 
-  useEffect(() => {
-    if (inView) {
-      let start = 0;
-      const end = parseFloat(value);
-      const increment = end / (duration / 16); // 60 FPS
-      const timer = setInterval(() => {
-        start += increment;
-        if (start > end) {
-          setCount(end);
-          clearInterval(timer);
-        } else {
-          setCount(isDecimal ? Math.round(start * 10) / 10 : Math.floor(start));
-        }
-      }, 16);
-      return () => clearInterval(timer);
-    }
-  }, [value, duration, inView, isDecimal]);
+export default function WhyUs() {
+  const { isDark } = useTheme();
 
-  return <span ref={ref}>{count}</span>;
-};
-
-const WhyUs = () => {
   return (
-    <section id="why-us" className="py-20 relative overflow-hidden">
-      {/* Background glow effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#4F46E5] rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#9333EA] rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-      </div>
+    <section className={`py-20 ${isDark ? 'bg-[#070818]' : 'bg-gray-50'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-4`}
+          >
+            Why Choose DashFriends?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+            className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-3xl mx-auto`}
+          >
+            Experience gaming like never before with our comprehensive platform designed for modern gamers.
+          </motion.p>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4F46E5] to-[#9333EA]">
-              Why Choose DashFriends?
-            </span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Join thousands of gamers who trust DashFriends to track their gaming journey
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: (
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M17 11a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm0 0a4 4 0 1 1 4 4h-4m-8 0H5a4 4 0 0 1 4-4m10-4a4 4 0 0 0-8 0m4-4v4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              ),
-              label: 'Active Gamers',
-              value: '25',
-              suffix: 'k+',
-              description: 'Trusted by thousands of gamers worldwide'
-            },
-            {
-              icon: (
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.83.932 6.59 2.468M21 3v6h-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              ),
-              label: 'Integrated Games',
-              value: '50',
-              suffix: '+',
-              description: 'Support for all major gaming platforms'
-            },
-            {
-              icon: (
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              ),
-              label: 'Average Rating',
-              value: '4.9',
-              suffix: '⭐',
-              description: 'Rated by our amazing community',
-              isDecimal: true
-            }
-          ].map((stat, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {whyUs.map((reason, index) => (
             <motion.div
-              key={stat.label}
+              key={reason.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="relative p-8 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 
-                hover:bg-white/10 transition-all duration-300 group"
+              className={`${isDark ? 'bg-[#0b0c2a]/50' : 'bg-white'} rounded-xl p-6 backdrop-blur-sm hover:shadow-lg transition-shadow duration-300`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4F46E5]/10 to-transparent opacity-0 
-                group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-              <div className="relative z-10">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] mb-6 group-hover:scale-110 transition-transform duration-300">
-                  {stat.icon}
-                </div>
-                <div className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-[#4F46E5] to-[#9333EA]">
-                  <AnimatedCounter value={stat.value} isDecimal={stat.isDecimal} />{stat.suffix}
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{stat.label}</h3>
-                <p className="text-gray-400">{stat.description}</p>
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-4 bg-gradient-to-br ${reason.gradient} shadow-lg shadow-primary/20`}>
+                {reason.icon}
               </div>
+              <h3 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'} mb-2`}>
+                {reason.title}
+              </h3>
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                {reason.description}
+              </p>
             </motion.div>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default WhyUs; 
+} 
