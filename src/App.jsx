@@ -11,6 +11,8 @@ import Footer from './components/Footer'
 import Dashboard from './pages/dashboard/Dashboard'
 import Friends from './pages/friends/Friends'
 import Achievements from './pages/achievements/Achievements'
+import WhyUs from './components/WhyUs'
+import Features from './components/Features'
 
 export default function App() {
   return (
@@ -23,6 +25,8 @@ export default function App() {
               <Header />
               <main>
                 <Hero />
+                <Features />
+                <WhyUs />
                 <Stats />
                 <Testimonials />
               </main>
