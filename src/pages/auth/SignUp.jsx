@@ -48,11 +48,44 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Here you would typically make an API call to create the user account
-    console.log('Form submitted:', formData)
     
-    // For now, we'll simulate a successful signup and redirect to dashboard
-    // In a real application, this would happen after successful API response
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    // Get existing users or initialize empty array
+    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]')
+    
+    // Check if username or email already exists
+    const userExists = existingUsers.some(
+      user => user.username === formData.username || user.email === formData.email
+    )
+
+    if (userExists) {
+      alert('Username or email already exists')
+      return
+    }
+
+    // Create new user object
+    const newUser = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+      avatar: formData.avatar,
+      createdAt: new Date().toISOString()
+    }
+
+    // Add new user to array and save to localStorage
+    existingUsers.push(newUser)
+    localStorage.setItem('users', JSON.stringify(existingUsers))
+
+    // Set current user
+    localStorage.setItem('currentUser', JSON.stringify(newUser))
+    
+    // Navigate to dashboard
     navigate('/dashboard')
   }
 

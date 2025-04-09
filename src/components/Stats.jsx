@@ -58,7 +58,7 @@ const AnimatedStat = ({ value, label, color, icon: Icon }) => {
 
 const Stats = () => {
   return (
-    <section className="py-20 px-4 relative overflow-hidden">
+    <section id="stats" className="py-20 px-4 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">

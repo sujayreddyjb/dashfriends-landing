@@ -206,7 +206,6 @@ function DashboardNav({ user }) {
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/dashboard" className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-primary transition-colors`}>Dashboard</Link>
             <Link to="/friends" className={`${isDark ? 'text-gray-300' : 'text-gray-600'} hover:text-primary transition-colors`}>Friends</Link>
-            <Link to="/games" className={`${isDark ? 'text-gray-300' : 'text-gray-600'} hover:text-primary transition-colors`}>Games</Link>
             <Link to="/achievements" className={`${isDark ? 'text-gray-300' : 'text-gray-600'} hover:text-primary transition-colors`}>Achievements</Link>
           </div>
 

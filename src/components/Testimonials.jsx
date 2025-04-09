@@ -133,33 +133,30 @@ export default function Testimonials() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-center mt-20 relative"
         >
-          <div className="relative z-10 p-12 rounded-3xl bg-[#0b0c2a]/80 backdrop-blur-sm border border-[#1a1f35]
-          before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-blue-500/5 before:via-transparent before:to-blue-500/5 before:opacity-50">
-            <h3 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent mb-8 relative z-20">
-              Ready to join thousands of happy gamers?
-            </h3>
-            <motion.a
-              href="/signup"
-              className="inline-flex items-center justify-center px-10 py-4 rounded-full text-white bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90 transition-all duration-300 transform hover:scale-105 relative overflow-hidden group text-lg font-medium
-              shadow-[0_4px_15px_-3px_rgba(79,70,229,0.3)] hover:shadow-[0_8px_25px_-5px_rgba(79,70,229,0.4)]"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="relative z-10">Sign Up Now</span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary to-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.2, 0.4, 0.2],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </motion.a>
-          </div>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent mb-8 relative z-20">
+            Ready to join thousands of happy gamers?
+          </h3>
+          <motion.a
+            href="/signup"
+            className="inline-flex items-center justify-center px-10 py-4 rounded-full text-white bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90 transition-all duration-300 transform hover:scale-105 relative overflow-hidden group text-lg font-medium
+            shadow-[0_4px_15px_-3px_rgba(79,70,229,0.3)] hover:shadow-[0_8px_25px_-5px_rgba(79,70,229,0.4)]"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span className="relative z-10">Sign Up Now</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary to-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </motion.a>
         </motion.div>
       </div>
     </section>

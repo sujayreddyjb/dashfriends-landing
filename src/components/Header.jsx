@@ -1,138 +1,231 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useScrollSpy } from '../hooks/useScrollSpy'
 import { Link } from 'react-router-dom'
-
-const sections = ['features', 'why-us', 'pricing', 'testimonials']
+import { useTheme } from '../contexts/ThemeContext'
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const activeSection = useScrollSpy(sections)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  const [activeSection, setActiveSection] = useState('')
+  const { isDark } = useTheme()
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
+      setActiveSection(sectionId)
       setIsMenuOpen(false)
     }
   }
 
-  const NavLink = ({ href, children, section }) => (
-    <a
-      href={`#${href}`}
-      onClick={(e) => {
-        e.preventDefault()
-        scrollToSection(href)
-      }}
-      className={`transition-colors duration-200 px-3 py-2 text-sm font-medium ${
-        activeSection === href
-          ? 'text-primary'
-          : 'text-gray-200 hover:text-white'
-      }`}
-    >
-      {children}
-    </a>
-  )
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['features', 'why-us', 'pricing', 'testimonials']
+      const scrollPosition = window.scrollY + 100
+
+      for (const section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const { offsetTop, offsetHeight } = element
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
-    }`}>
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          <div className="flex-shrink-0">
-            <motion.span 
-              className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent cursor-pointer"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            >
+    <header className={`fixed w-full z-50 ${isDark ? 'bg-[#070818]/80' : 'bg-white/80'} backdrop-blur-sm`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Link to="/" className="text-xl font-bold bg-gradient-to-r from-primary via-blue-500 to-primary bg-clip-text text-transparent">
               DashFriends
-            </motion.span>
-          </div>
-          
+            </Link>
+          </motion.div>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            <motion.div
-              className="flex space-x-8"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+          <nav className="hidden md:flex items-center space-x-8">
+            <motion.a 
+              href="#features"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToSection('features')
+              }}
+              className={`relative text-base transition-all duration-300 ${
+                activeSection === 'features' 
+                  ? 'text-primary' 
+                  : 'text-gray-200 hover:text-white'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <NavLink href="features" section="features">Features</NavLink>
-              <NavLink href="why-us" section="why-us">Why Us</NavLink>
-              <NavLink href="pricing" section="pricing">Pricing</NavLink>
-              <NavLink href="testimonials" section="testimonials">Testimonials</NavLink>
-            </motion.div>
-            
-            <motion.div 
-              className="flex items-center space-x-4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              <span className="relative z-10">Features</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              />
+            </motion.a>
+            <motion.a 
+              href="#why-us"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToSection('why-us')
+              }}
+              className={`relative text-base transition-all duration-300 ${
+                activeSection === 'why-us' 
+                  ? 'text-primary' 
+                  : 'text-gray-200 hover:text-white'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Link 
-                to="/signin" 
-                className="transition-colors duration-200 px-3 py-2 text-sm font-medium text-gray-200 hover:text-white"
+              <span className="relative z-10">Why Us</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              />
+            </motion.a>
+            <motion.a 
+              href="#testimonials"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToSection('testimonials')
+              }}
+              className={`relative text-base transition-all duration-300 ${
+                activeSection === 'testimonials' 
+                  ? 'text-primary' 
+                  : 'text-gray-200 hover:text-white'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="relative z-10">Testimonials</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              />
+            </motion.a>
+            <motion.a 
+              href="#pricing"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToSection('pricing')
+              }}
+              className={`relative text-base transition-all duration-300 ${
+                activeSection === 'pricing' 
+                  ? 'text-primary' 
+                  : 'text-gray-200 hover:text-white'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="relative z-10">Pricing</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              />
+            </motion.a>
+            <div className="flex items-center space-x-4">
+              <motion.div whileHover={{ x: 5 }}>
+                <Link 
+                  to="/signin" 
+                  className="text-gray-200 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+              </motion.div>
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="inline-flex items-center justify-center px-6 py-2 rounded-full shadow-sm text-sm font-medium text-white bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:scale-105"
-              >
-                Sign up
-              </Link>
-            </motion.div>
-          </div>
+                <Link 
+                  to="/signup" 
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white hover:from-primary/90 hover:to-blue-500/90 transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </motion.div>
+            </div>
+          </nav>
 
           {/* Mobile Menu Button */}
-          <motion.button 
-            className="md:hidden rounded-md p-2 inline-flex items-center justify-center text-gray-200 hover:text-white hover:bg-white/10 transition-colors duration-200"
+          <motion.button
+            className="md:hidden text-gray-200 hover:text-white transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            <span className="sr-only">Open menu</span>
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
             </svg>
           </motion.button>
         </div>
-      </nav>
+      </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden bg-black/80 backdrop-blur-md border-t border-white/10"
+            className="md:hidden absolute top-full left-0 right-0 bg-[#070818]/95 backdrop-blur-sm border-t border-white/10"
           >
-            <div className="px-4 pt-4 pb-6 space-y-3">
+            <div className="max-w-7xl mx-auto px-4 py-4">
               <motion.a 
                 href="#features"
                 onClick={(e) => {
                   e.preventDefault()
                   scrollToSection('features')
                 }}
-                className={`block px-3 py-2 transition-colors ${
-                  activeSection === 'features' ? 'text-primary' : 'text-gray-200 hover:text-white'
+                className={`relative block px-3 py-2 transition-all duration-300 ${
+                  activeSection === 'features' 
+                    ? 'text-primary' 
+                    : 'text-gray-200 hover:text-white'
                 }`}
-                whileHover={{ x: 5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Features
+                <span className="relative z-10">Features</span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                />
               </motion.a>
               <motion.a 
                 href="#why-us"
@@ -140,25 +233,20 @@ export default function Header() {
                   e.preventDefault()
                   scrollToSection('why-us')
                 }}
-                className={`block px-3 py-2 transition-colors ${
-                  activeSection === 'why-us' ? 'text-primary' : 'text-gray-200 hover:text-white'
+                className={`relative block px-3 py-2 transition-all duration-300 ${
+                  activeSection === 'why-us' 
+                    ? 'text-primary' 
+                    : 'text-gray-200 hover:text-white'
                 }`}
-                whileHover={{ x: 5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Why Us
-              </motion.a>
-              <motion.a 
-                href="#pricing"
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection('pricing')
-                }}
-                className={`block px-3 py-2 transition-colors ${
-                  activeSection === 'pricing' ? 'text-primary' : 'text-gray-200 hover:text-white'
-                }`}
-                whileHover={{ x: 5 }}
-              >
-                Pricing
+                <span className="relative z-10">Why Us</span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                />
               </motion.a>
               <motion.a 
                 href="#testimonials"
@@ -166,12 +254,41 @@ export default function Header() {
                   e.preventDefault()
                   scrollToSection('testimonials')
                 }}
-                className={`block px-3 py-2 transition-colors ${
-                  activeSection === 'testimonials' ? 'text-primary' : 'text-gray-200 hover:text-white'
+                className={`relative block px-3 py-2 transition-all duration-300 ${
+                  activeSection === 'testimonials' 
+                    ? 'text-primary' 
+                    : 'text-gray-200 hover:text-white'
                 }`}
-                whileHover={{ x: 5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Testimonials
+                <span className="relative z-10">Testimonials</span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                />
+              </motion.a>
+              <motion.a 
+                href="#pricing"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('pricing')
+                }}
+                className={`relative block px-3 py-2 transition-all duration-300 ${
+                  activeSection === 'pricing' 
+                    ? 'text-primary' 
+                    : 'text-gray-200 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="relative z-10">Pricing</span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                />
               </motion.a>
               <div className="pt-4 flex flex-col space-y-3">
                 <motion.div whileHover={{ x: 5 }}>

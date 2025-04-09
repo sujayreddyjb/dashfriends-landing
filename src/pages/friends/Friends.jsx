@@ -11,7 +11,10 @@ const gameIcons = {
   "CS:GO": "🔫",
   "League of Legends": "⚔️",
   "Fortnite": "🎮",
-  "Minecraft": "⛏️"
+  "Minecraft": "⛏️",
+  "Apex Legends": "🎯",
+  "Dota 2": "⚔️",
+  "Overwatch": "🎮"
 }
 
 // Game colors mapping
@@ -20,13 +23,45 @@ const gameColors = {
   "CS:GO": "bg-orange-500/20 text-orange-400",
   "League of Legends": "bg-blue-500/20 text-blue-400",
   "Fortnite": "bg-purple-500/20 text-purple-400",
-  "Minecraft": "bg-green-500/20 text-green-400"
+  "Minecraft": "bg-green-500/20 text-green-400",
+  "Apex Legends": "bg-red-500/20 text-red-400",
+  "Dota 2": "bg-blue-500/20 text-blue-400",
+  "Overwatch": "bg-orange-500/20 text-orange-400"
 }
+
+// Friend groups
+const friendGroups = [
+  { id: 'all', name: 'All Friends' },
+  { id: 'favorites', name: 'Favorites' },
+  { id: 'valorant', name: 'Valorant Squad' },
+  { id: 'csgo', name: 'CS:GO Team' },
+  { id: 'minecraft', name: 'Minecraft Builders' }
+]
 
 // Mock data - In a real app, this would come from an API
 const mockFriends = [
-  { id: 1, username: "Alex", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex", status: "online", lastSeen: "Now", games: ["Valorant", "CS:GO"] },
-  { id: 2, username: "Sarah", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah", status: "online", lastSeen: "Now", games: ["League of Legends"] },
+  { 
+    id: 1, 
+    username: "Alex", 
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex", 
+    status: "online", 
+    lastSeen: "Now", 
+    games: ["Valorant", "CS:GO"],
+    groups: ['favorites', 'valorant', 'csgo'],
+    level: 42,
+    rank: "Diamond"
+  },
+  { 
+    id: 2, 
+    username: "Sarah", 
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah", 
+    status: "online", 
+    lastSeen: "Now", 
+    games: ["League of Legends", "Valorant"],
+    groups: ['valorant'],
+    level: 35,
+    rank: "Platinum"
+  },
   { id: 3, username: "Mike", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike", status: "offline", lastSeen: "2 hours ago", games: ["Valorant"] },
   { id: 4, username: "Emma", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma", status: "idle", lastSeen: "10 minutes ago", games: ["CS:GO", "Valorant"] },
 ]
@@ -85,7 +120,73 @@ function MutualFriendsTooltip({ mutuals }) {
   )
 }
 
-function FriendCard({ friend }) {
+function QuickActions({ friend, onRemove, onAddToFavorites, isFavorite }) {
+  const { isDark } = useTheme()
+  const [showActions, setShowActions] = useState(false)
+
+  return (
+    <div className="relative">
+      <motion.button
+        onClick={() => setShowActions(!showActions)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`p-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} transition-colors`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} viewBox="0 0 20 20" fill="currentColor">
+          <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+        </svg>
+      </motion.button>
+
+      {showActions && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg ${
+            isDark ? 'bg-[#1a1f35] border border-[#2a2f45]' : 'bg-white border border-gray-200'
+          } py-1 z-10`}
+        >
+          <button
+            onClick={() => {
+              onAddToFavorites(friend.id)
+              setShowActions(false)
+            }}
+            className={`w-full text-left px-4 py-2 text-sm ${
+              isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+            } transition-colors flex items-center space-x-2`}
+          >
+            <span>{isFavorite ? '⭐' : '☆'}</span>
+            <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+          </button>
+          <button
+            onClick={() => {
+              window.open(`/message/${friend.username}`, '_blank')
+              setShowActions(false)
+            }}
+            className={`w-full text-left px-4 py-2 text-sm ${
+              isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+            } transition-colors flex items-center space-x-2`}
+          >
+            <span>💬</span>
+            <span>Send Message</span>
+          </button>
+          <button
+            onClick={() => {
+              onRemove(friend.id)
+              setShowActions(false)
+            }}
+            className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center space-x-2"
+          >
+            <span>🚫</span>
+            <span>Remove Friend</span>
+          </button>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+function FriendCard({ friend, onRemove, onAddToFavorites, isFavorite }) {
   const { isDark } = useTheme()
   
   return (
@@ -96,7 +197,7 @@ function FriendCard({ friend }) {
       exit={{ opacity: 0, y: -20 }}
       className={`${isDark ? 'bg-[#0b0c2a]/50' : 'bg-gray-50'} rounded-xl p-4 backdrop-blur-sm`}
     >
-      <div className="flex items-center space-x-4">
+      <div className="flex items-start space-x-4">
         <div className="relative">
           <img
             src={friend.avatar}
@@ -113,7 +214,21 @@ function FriendCard({ friend }) {
           />
         </div>
         <div className="flex-1">
-          <h3 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{friend.username}</h3>
+          <div className="flex items-center space-x-2">
+            <h3 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {friend.username}
+            </h3>
+            {friend.level && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}>
+                Lvl {friend.level}
+              </span>
+            )}
+            {friend.rank && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                {friend.rank}
+              </span>
+            )}
+          </div>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             {friend.status === 'online' ? 'Online' : `Last seen ${friend.lastSeen}`}
           </p>
@@ -123,11 +238,12 @@ function FriendCard({ friend }) {
             ))}
           </div>
         </div>
-        <button className={`p-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} transition-colors`}>
-          <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} viewBox="0 0 20 20" fill="currentColor">
-            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-          </svg>
-        </button>
+        <QuickActions
+          friend={friend}
+          onRemove={onRemove}
+          onAddToFavorites={onAddToFavorites}
+          isFavorite={isFavorite}
+        />
       </div>
     </motion.div>
   )
@@ -260,6 +376,116 @@ function FriendSuggestion({ suggestion, onAdd }) {
   )
 }
 
+function AddFriendModal({ isOpen, onClose }) {
+  const { isDark } = useTheme()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (searchQuery.length >= 3) {
+      setIsLoading(true)
+      // Simulate API call
+      setTimeout(() => {
+        setSearchResults([
+          { id: 1, username: "GameMaster", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=GameMaster" },
+          { id: 2, username: "ProPlayer99", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ProPlayer99" }
+        ])
+        setIsLoading(false)
+      }, 1000)
+    } else {
+      setSearchResults([])
+    }
+  }, [searchQuery])
+
+  if (!isOpen) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.95 }}
+        className={`w-full max-w-md rounded-2xl ${
+          isDark ? 'bg-[#0b0c2a] border border-[#1a1f35]' : 'bg-white'
+        } p-6 shadow-xl`}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Add New Friend
+          </h2>
+          <button
+            onClick={onClose}
+            className={`p-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} transition-colors`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="relative mb-6">
+          <input
+            type="text"
+            placeholder="Search by username or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`w-full px-4 py-3 rounded-lg ${
+              isDark
+                ? 'bg-[#1a1f35]/50 text-white placeholder-gray-500'
+                : 'bg-gray-50 text-gray-900 placeholder-gray-400'
+            } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+          />
+          {isLoading && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4 max-h-60 overflow-y-auto">
+          {searchResults.map((user) => (
+            <motion.div
+              key={user.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex items-center justify-between p-3 rounded-lg ${
+                isDark ? 'bg-[#1a1f35]/50' : 'bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <img src={user.avatar} alt={user.username} className="w-10 h-10 rounded-full" />
+                <span className={isDark ? 'text-white' : 'text-gray-900'}>{user.username}</span>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  toast.success(`Friend request sent to ${user.username}!`)
+                  onClose()
+                }}
+                className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm transition-colors"
+              >
+                Add Friend
+              </motion.button>
+            </motion.div>
+          ))}
+          {searchQuery.length >= 3 && searchResults.length === 0 && !isLoading && (
+            <p className={`text-center py-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              No users found
+            </p>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 export default function Friends() {
   const { isDark } = useTheme()
   const [searchQuery, setSearchQuery] = useState('')
@@ -268,21 +494,40 @@ export default function Friends() {
   const [suggestions, setSuggestions] = useState(mockSuggestions)
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterGame, setFilterGame] = useState('all')
+  const [filterGroup, setFilterGroup] = useState('all')
   const [sortBy, setSortBy] = useState('status')
+  const [showAddFriend, setShowAddFriend] = useState(false)
+  const [favorites, setFavorites] = useState(new Set(['1'])) // Mock initial favorite
 
   const handleAcceptRequest = (requestId) => {
     setFriendRequests(requests => requests.filter(r => r.id !== requestId))
-    // In a real app, you would make an API call here
   }
 
   const handleDeclineRequest = (requestId) => {
     setFriendRequests(requests => requests.filter(r => r.id !== requestId))
-    // In a real app, you would make an API call here
   }
 
   const handleAddFriend = (suggestionId) => {
     setSuggestions(suggestions => suggestions.filter(s => s.id !== suggestionId))
-    // In a real app, you would make an API call here
+  }
+
+  const handleRemoveFriend = (friendId) => {
+    setFriends(friends => friends.filter(f => f.id !== friendId))
+    toast.success('Friend removed successfully')
+  }
+
+  const handleToggleFavorite = (friendId) => {
+    setFavorites(prev => {
+      const next = new Set(prev)
+      if (next.has(String(friendId))) {
+        next.delete(String(friendId))
+        toast.success('Removed from favorites')
+      } else {
+        next.add(String(friendId))
+        toast.success('Added to favorites')
+      }
+      return next
+    })
   }
 
   const filteredAndSortedFriends = friends
@@ -290,11 +535,17 @@ export default function Friends() {
       const matchesSearch = friend.username.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesStatus = filterStatus === 'all' || friend.status === filterStatus
       const matchesGame = filterGame === 'all' || friend.games.includes(filterGame)
-      return matchesSearch && matchesStatus && matchesGame
+      const matchesGroup = filterGroup === 'all' || 
+        (filterGroup === 'favorites' ? favorites.has(String(friend.id)) : friend.groups?.includes(filterGroup))
+      return matchesSearch && matchesStatus && matchesGame && matchesGroup
     })
     .sort((a, b) => {
       if (sortBy === 'status') {
         return a.status === 'online' ? -1 : 1
+      } else if (sortBy === 'name') {
+        return a.username.localeCompare(b.username)
+      } else if (sortBy === 'level') {
+        return (b.level || 0) - (a.level || 0)
       }
       return 0
     })
@@ -304,24 +555,70 @@ export default function Friends() {
   return (
     <div className={`min-h-screen ${isDark ? 'bg-[#070818]' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friends</h1>
+          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            Manage your friends and connections
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Friends List */}
           <div className="lg:col-span-2 space-y-6">
-            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm`}>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
-                <div className="flex-1">
-                  <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friends</h2>
-                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {friends.length} total friends
-                  </p>
+            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
+              <div className="flex flex-col space-y-6">
+                {/* Header and Add Friend Button */}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friends</h2>
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {friends.length} total friends
+                    </p>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowAddFriend(true)}
+                    className="px-4 py-2 bg-primary text-white rounded-lg 
+                    transition-colors flex items-center space-x-2 hover:bg-primary/90"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>Add Friend</span>
+                  </motion.button>
                 </div>
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+
+                {/* Friend Groups */}
+                <div className="flex flex-wrap gap-2">
+                  {friendGroups.map((group) => (
+                    <motion.button
+                      key={group.id}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setFilterGroup(group.id)}
+                      className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                        filterGroup === group.id
+                          ? 'bg-primary text-white'
+                          : isDark
+                          ? 'bg-white/5 text-gray-300 hover:bg-white/10'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {group.name}
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Filters */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className={`px-3 py-2 rounded-lg ${
-                      isDark ? 'bg-[#0b0c2a]/50 text-white' : 'bg-gray-50 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                      isDark ? 'bg-[#0b0c2a]/50 text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
+                    } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
                   >
                     <option value="all">All Status</option>
                     <option value="online">Online</option>
@@ -332,8 +629,8 @@ export default function Friends() {
                     value={filterGame}
                     onChange={(e) => setFilterGame(e.target.value)}
                     className={`px-3 py-2 rounded-lg ${
-                      isDark ? 'bg-[#0b0c2a]/50 text-white' : 'bg-gray-50 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                      isDark ? 'bg-[#0b0c2a]/50 text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
+                    } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
                   >
                     <option value="all">All Games</option>
                     {allGames.map(game => (
@@ -344,22 +641,25 @@ export default function Friends() {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className={`px-3 py-2 rounded-lg ${
-                      isDark ? 'bg-[#0b0c2a]/50 text-white' : 'bg-gray-50 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                      isDark ? 'bg-[#0b0c2a]/50 text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
+                    } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
                   >
                     <option value="status">Sort by Status</option>
                     <option value="name">Sort by Name</option>
+                    <option value="level">Sort by Level</option>
                   </select>
                 </div>
-                <div className="relative w-full sm:w-64">
+
+                {/* Search */}
+                <div className="relative">
                   <input
                     type="text"
                     placeholder="Search friends..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full px-4 py-2 rounded-lg ${
-                      isDark ? 'bg-[#0b0c2a]/50 text-white placeholder-gray-500' : 'bg-gray-50 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                      isDark ? 'bg-[#0b0c2a]/50 text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
+                    } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -371,19 +671,43 @@ export default function Friends() {
                   </svg>
                 </div>
               </div>
+
+              {/* Friends List */}
               <AnimatePresence>
-                <div className="space-y-4">
+                <div className="space-y-4 mt-6">
                   {filteredAndSortedFriends.map(friend => (
-                    <FriendCard key={friend.id} friend={friend} />
+                    <FriendCard
+                      key={friend.id}
+                      friend={friend}
+                      onRemove={handleRemoveFriend}
+                      onAddToFavorites={handleToggleFavorite}
+                      isFavorite={favorites.has(String(friend.id))}
+                    />
                   ))}
                   {filteredAndSortedFriends.length === 0 && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                      className={`flex flex-col items-center justify-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
                     >
-                      No friends found matching your filters
-                    </motion.p>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <p className="text-center">No friends found matching your filters</p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setFilterStatus('all')
+                          setFilterGame('all')
+                          setFilterGroup('all')
+                          setSearchQuery('')
+                        }}
+                        className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+                      >
+                        Clear Filters
+                      </motion.button>
+                    </motion.div>
                   )}
                 </div>
               </AnimatePresence>
@@ -393,8 +717,15 @@ export default function Friends() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Friend Requests */}
-            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm`}>
-              <h2 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Friend Requests</h2>
+            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friend Requests</h2>
+                {friendRequests.length > 0 && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-sm">
+                    {friendRequests.length} pending
+                  </span>
+                )}
+              </div>
               <AnimatePresence>
                 <div className="space-y-4">
                   {friendRequests.map(request => (
@@ -406,20 +737,23 @@ export default function Friends() {
                     />
                   ))}
                   {friendRequests.length === 0 && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`text-center py-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                      className={`flex flex-col items-center justify-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
                     >
-                      No pending friend requests
-                    </motion.p>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <p className="text-center text-sm">No pending friend requests</p>
+                    </motion.div>
                   )}
                 </div>
               </AnimatePresence>
             </div>
 
             {/* Suggestions */}
-            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm`}>
+            <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
               <h2 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Suggested Friends</h2>
               <AnimatePresence>
                 <div className="space-y-4">
@@ -431,19 +765,46 @@ export default function Friends() {
                     />
                   ))}
                   {suggestions.length === 0 && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`text-center py-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                      className={`flex flex-col items-center justify-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
                     >
-                      No friend suggestions available
-                    </motion.p>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <p className="text-center text-sm">No friend suggestions available</p>
+                    </motion.div>
                   )}
                 </div>
               </AnimatePresence>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Add Friend Modal */}
+      <AnimatePresence>
+        {showAddFriend && (
+          <AddFriendModal
+            isOpen={showAddFriend}
+            onClose={() => setShowAddFriend(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Add Friend Button (Mobile) */}
+      <div className="lg:hidden fixed right-4 bottom-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowAddFriend(true)}
+          className="w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+        </motion.button>
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import Header from './components/Header'
 import Hero from './components/Hero'
 import Stats from './components/Stats'
 import Testimonials from './components/Testimonials'
+import Pricing from './components/Pricing'
 import Footer from './components/Footer'
 import Dashboard from './pages/dashboard/Dashboard'
 import Friends from './pages/friends/Friends'
@@ -29,6 +30,7 @@ export default function App() {
                 <WhyUs />
                 <Stats />
                 <Testimonials />
+                <Pricing />
               </main>
               <Footer />
             </div>

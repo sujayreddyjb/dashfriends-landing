@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 // Social login icons (you can replace these with actual icons from your preferred icon library)
 const socialIcons = {
@@ -25,11 +25,13 @@ const socialIcons = {
 }
 
 export default function SignIn() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     emailOrUsername: '',
     password: '',
     rememberMe: false
   })
+  const [error, setError] = useState('')
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -37,12 +39,32 @@ export default function SignIn() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
+    // Clear any previous error when user starts typing
+    if (error) setError('')
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission
-    console.log('Form submitted:', formData)
+    
+    // Get stored user data from localStorage
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]')
+    const user = storedUsers.find(u => 
+      (u.email === formData.emailOrUsername || u.username === formData.emailOrUsername) && 
+      u.password === formData.password
+    )
+
+    if (user) {
+      // Store authentication state
+      localStorage.setItem('currentUser', JSON.stringify(user))
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberMe', 'true')
+      }
+      
+      // Redirect to dashboard
+      navigate('/dashboard')
+    } else {
+      setError('Invalid email/username or password')
+    }
   }
 
   return (
@@ -124,6 +146,13 @@ export default function SignIn() {
                 required
               />
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="text-red-500 text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
