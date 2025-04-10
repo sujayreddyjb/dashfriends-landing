@@ -4,6 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext'
 import { Tooltip } from 'react-tooltip'
 import confetti from 'canvas-confetti'
 import { toast } from 'react-hot-toast'
+import Navbar from '../../components/Navbar'
 
 // Game icons mapping
 const gameIcons = {
@@ -488,6 +489,27 @@ function AddFriendModal({ isOpen, onClose }) {
 
 export default function Friends() {
   const { isDark } = useTheme()
+  const [user] = useState({
+    username: "PlayerOne",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=PlayerOne",
+    notifications: [
+      {
+        id: 1,
+        message: "John accepted your friend request",
+        timestamp: "2 hours ago",
+        read: false,
+        type: "friend"
+      }
+    ],
+    friendRequests: [
+      {
+        id: 1,
+        username: "GamerPro",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=GamerPro",
+        mutualFriends: 3
+      }
+    ]
+  })
   const [searchQuery, setSearchQuery] = useState('')
   const [friends, setFriends] = useState(mockFriends)
   const [friendRequests, setFriendRequests] = useState(mockFriendRequests)
@@ -553,22 +575,16 @@ export default function Friends() {
   const allGames = [...new Set(friends.flatMap(f => f.games))]
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#070818]' : 'bg-gray-50'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page header */}
-        <div className="mb-8">
-          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friends</h1>
-          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Manage your friends and connections
-          </p>
-        </div>
-
+    <div className={`min-h-screen ${isDark ? 'bg-[#070817]' : 'bg-gray-50'}`}>
+      <Navbar user={user} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          Friends
+        </h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Friends List */}
           <div className="lg:col-span-2 space-y-6">
             <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
               <div className="flex flex-col space-y-6">
-                {/* Header and Add Friend Button */}
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friends</h2>
@@ -590,7 +606,6 @@ export default function Friends() {
                   </motion.button>
                 </div>
 
-                {/* Friend Groups */}
                 <div className="flex flex-wrap gap-2">
                   {friendGroups.map((group) => (
                     <motion.button
@@ -611,7 +626,6 @@ export default function Friends() {
                   ))}
                 </div>
 
-                {/* Filters */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <select
                     value={filterStatus}
@@ -650,7 +664,6 @@ export default function Friends() {
                   </select>
                 </div>
 
-                {/* Search */}
                 <div className="relative">
                   <input
                     type="text"
@@ -672,7 +685,6 @@ export default function Friends() {
                 </div>
               </div>
 
-              {/* Friends List */}
               <AnimatePresence>
                 <div className="space-y-4 mt-6">
                   {filteredAndSortedFriends.map(friend => (
@@ -714,9 +726,7 @@ export default function Friends() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Friend Requests */}
             <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
               <div className="flex items-center justify-between mb-6">
                 <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friend Requests</h2>
@@ -752,7 +762,6 @@ export default function Friends() {
               </AnimatePresence>
             </div>
 
-            {/* Suggestions */}
             <div className={`${isDark ? 'bg-[#1a1f35]/50' : 'bg-white'} rounded-2xl p-6 backdrop-blur-sm border ${isDark ? 'border-[#2a2f45]' : 'border-gray-200'}`}>
               <h2 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Suggested Friends</h2>
               <AnimatePresence>
@@ -781,9 +790,8 @@ export default function Friends() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Add Friend Modal */}
       <AnimatePresence>
         {showAddFriend && (
           <AddFriendModal
@@ -793,7 +801,6 @@ export default function Friends() {
         )}
       </AnimatePresence>
 
-      {/* Floating Add Friend Button (Mobile) */}
       <div className="lg:hidden fixed right-4 bottom-4">
         <motion.button
           whileHover={{ scale: 1.05 }}

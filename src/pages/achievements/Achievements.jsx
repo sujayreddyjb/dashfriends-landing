@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../contexts/ThemeContext'
 import { Tooltip } from 'react-tooltip'
+import { AchievementSkeleton, CardSkeleton } from '../../components/LoadingSkeletons'
+import { ErrorBoundary } from 'react-error-boundary'
+import Navbar from '../../components/Navbar'
 
 // Level system configuration
 const LEVEL_CONFIG = {
@@ -582,14 +585,71 @@ function UnlockableRewards({ levelInfo, streak }) {
   )
 }
 
+function ErrorFallback({ error, resetErrorBoundary }) {
+  const { isDark } = useTheme()
+  return (
+    <div role="alert" className="text-center py-8">
+      <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        Something went wrong
+      </h2>
+      <pre className={`text-sm mb-4 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{error.message}</pre>
+      <button
+        onClick={resetErrorBoundary}
+        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+      >
+        Try again
+      </button>
+    </div>
+  )
+}
+
 export default function Achievements() {
   const { isDark } = useTheme()
+  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [achievements, setAchievements] = useState(mockAchievements)
+  const [achievements, setAchievements] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [filterGame, setFilterGame] = useState('all')
   const [sortBy, setSortBy] = useState('recent')
   const [selectedAchievement, setSelectedAchievement] = useState(null)
+  const [user] = useState({
+    username: "PlayerOne",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=PlayerOne",
+    notifications: [
+      {
+        id: 1,
+        message: "You've unlocked a new achievement: First Victory!",
+        timestamp: "1 hour ago",
+        read: false,
+        type: "achievement"
+      }
+    ],
+    friendRequests: [
+      {
+        id: 1,
+        username: "GamerPro",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=GamerPro",
+        mutualFriends: 3
+      }
+    ]
+  })
+
+  useEffect(() => {
+    // Simulate loading achievements data
+    const loadAchievements = async () => {
+      setIsLoading(true)
+      try {
+        // In a real app, this would be an API call
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setAchievements(mockAchievements)
+      } catch (error) {
+        console.error('Failed to load achievements:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadAchievements()
+  }, [])
 
   // Calculate totalXP from unlocked achievements
   const totalXP = achievements.reduce((sum, a) => sum + (a.progress === 100 ? a.xp : 0), 0)
@@ -631,29 +691,43 @@ export default function Achievements() {
     })
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#070818]' : 'bg-gray-50'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className={`min-h-screen ${isDark ? 'bg-[#070817]' : 'bg-gray-50'}`}>
+      <Navbar user={user} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          Achievements
+        </h1>
         {/* Page header */}
         <div className="mb-8">
-          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Achievements</h1>
-          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`} tabIndex="0">
+            Achievements
+          </h1>
+          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`} tabIndex="0">
             Track your progress and unlock rewards
           </p>
         </div>
 
         {/* Achievement Stats */}
         <div className="mb-8">
-          <AchievementStats achievements={achievements} />
+          {isLoading ? (
+            <CardSkeleton />
+          ) : (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <AchievementStats achievements={achievements} />
+            </ErrorBoundary>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
           <div className="space-y-6">
             <Card>
-              <h2 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Filters</h2>
+              <h2 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`} tabIndex="0">
+                Filters
+              </h2>
               
               {/* Categories */}
-              <div className="space-y-2">
+              <div className="space-y-2" role="group" aria-label="Achievement categories">
                 {categories.map((category) => (
                   <motion.button
                     key={category.id}
@@ -667,6 +741,7 @@ export default function Achievements() {
                         ? 'text-gray-300 hover:bg-white/5'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
+                    aria-pressed={selectedCategory === category.id}
                   >
                     {category.name}
                   </motion.button>
@@ -675,15 +750,20 @@ export default function Achievements() {
 
               {/* Game Filter */}
               <div className="mt-6">
-                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label 
+                  htmlFor="gameFilter" 
+                  className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                >
                   Game
                 </label>
                 <select
+                  id="gameFilter"
                   value={filterGame}
                   onChange={(e) => setFilterGame(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg ${
                     isDark ? 'bg-[#151520] text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
                   } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                  aria-label="Filter achievements by game"
                 >
                   <option value="all">All Games</option>
                   {allGames.map(game => (
@@ -694,15 +774,20 @@ export default function Achievements() {
 
               {/* Sort By */}
               <div className="mt-6">
-                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label 
+                  htmlFor="sortBy" 
+                  className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                >
                   Sort By
                 </label>
                 <select
+                  id="sortBy"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg ${
                     isDark ? 'bg-[#151520] text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
                   } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                  aria-label="Sort achievements"
                 >
                   <option value="recent">Most Recent</option>
                   <option value="progress">Progress</option>
@@ -715,71 +800,90 @@ export default function Achievements() {
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
-            <UnlockableRewards levelInfo={calculateLevel(totalXP)} streak={streak} />
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <UnlockableRewards levelInfo={calculateLevel(totalXP)} streak={streak} />
+            </ErrorBoundary>
 
             <Card>
               {/* Search */}
               <div className="relative mb-6">
+                <label htmlFor="searchAchievements" className="sr-only">
+                  Search achievements
+                </label>
                 <input
+                  id="searchAchievements"
                   type="text"
                   placeholder="Search achievements..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg ${
+                  className={`w-full px-4 py-2 pl-10 rounded-lg ${
                     isDark ? 'bg-[#151520] text-white border-[#2a2f45]' : 'bg-gray-50 text-gray-900 border-gray-200'
                   } border focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                  aria-label="Search achievements"
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 absolute right-3 top-1/2 transform -translate-y-1/2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}
+                  className={`h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                 </svg>
               </div>
 
               {/* Achievements List */}
-              <AnimatePresence>
-                <div className="space-y-4">
-                  {filteredAndSortedAchievements.map(achievement => (
-                    <AchievementCard
-                      key={achievement.id}
-                      achievement={achievement}
-                      onClick={setSelectedAchievement}
-                    />
-                  ))}
-                  {filteredAndSortedAchievements.length === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className={`flex flex-col items-center justify-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                      </svg>
-                      <p className="text-center">No achievements found</p>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => {
-                          setSelectedCategory('all')
-                          setFilterGame('all')
-                          setSortBy('recent')
-                          setSearchQuery('')
-                        }}
-                        className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+              <AnimatePresence mode="wait">
+                {isLoading ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <AchievementSkeleton key={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredAndSortedAchievements.map(achievement => (
+                      <AchievementCard
+                        key={achievement.id}
+                        achievement={achievement}
+                        onClick={setSelectedAchievement}
+                      />
+                    ))}
+                    {filteredAndSortedAchievements.length === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className={`flex flex-col items-center justify-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                        role="status"
+                        aria-live="polite"
                       >
-                        Clear Filters
-                      </motion.button>
-                    </motion.div>
-                  )}
-                </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        <p className="text-center">No achievements found</p>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setSelectedCategory('all')
+                            setFilterGame('all')
+                            setSortBy('recent')
+                            setSearchQuery('')
+                          }}
+                          className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+                          aria-label="Clear all filters"
+                        >
+                          Clear Filters
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
               </AnimatePresence>
             </Card>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Achievement Details Modal */}
       <AnimatePresence>

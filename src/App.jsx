@@ -14,6 +14,9 @@ import Friends from './pages/friends/Friends'
 import Achievements from './pages/achievements/Achievements'
 import WhyUs from './components/WhyUs'
 import Features from './components/Features'
+import Profile from './pages/profile/Profile'
+import ProfileSettings from './pages/profile/ProfileSettings'
+import './styles/animations.css'
 
 export default function App() {
   return (
@@ -49,6 +52,9 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/achievements" element={<Achievements />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/settings" element={<ProfileSettings />} />
+          <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </Router>
     </ThemeProvider>

@@ -1,186 +1,311 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useTheme } from '../contexts/ThemeContext'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
+import { BellIcon, UserGroupIcon, XMarkIcon } from '@heroicons/react/24/outline/index.js'
+import { useTheme } from '../contexts/ThemeContext'
 
-const navItems = [
-  { name: 'Dashboard', path: '/dashboard' },
-  { name: 'Friends', path: '/friends' },
-  { name: 'Achievements', path: '/achievements' },
-]
-
-export default function Navbar() {
-  const { isDark } = useTheme()
-  const location = useLocation()
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'New friend request', message: 'Alex wants to be your friend', time: '5m ago' },
-    { id: 2, title: 'Achievement unlocked', message: 'You reached level 10!', time: '10m ago' }
-  ])
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [showUserMenu, setShowUserMenu] = useState(false)
+function ThemeSwitcher() {
+  const { isDark, toggleTheme } = useTheme()
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 ${isDark ? 'bg-[#0b0c2a]/95' : 'bg-white/95'} backdrop-blur-sm border-b ${isDark ? 'border-[#1a1f35]' : 'border-gray-200'}`}>
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-full hover:bg-white/5 transition-colors"
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+function NotificationsPanel({ notifications, onClose }) {
+  const { isDark } = useTheme()
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      className={`absolute right-0 mt-2 w-96 ${isDark ? 'bg-[#0b0c2a] border-[#1a1f35]' : 'bg-white border-gray-200'} border rounded-lg shadow-lg py-2`}
+    >
+      <div className={`px-4 py-2 border-b ${isDark ? 'border-[#1a1f35]' : 'border-gray-200'}`}>
+        <div className="flex justify-between items-center">
+          <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Notifications</h3>
+          <button onClick={onClose} className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div className="max-h-96 overflow-y-auto">
+        {notifications.length === 0 ? (
+          <p className={`text-center py-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No new notifications</p>
+        ) : (
+          notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`px-4 py-3 ${!notification.read ? (isDark ? 'bg-primary/5' : 'bg-primary/5') : ''} hover:bg-${isDark ? 'white/5' : 'gray-50'} transition-colors`}
+            >
+              <div className="flex items-start space-x-3">
+                <div className={`mt-1 p-2 rounded-full ${
+                  notification.type === 'achievement' ? 'bg-yellow-500/10 text-yellow-500' :
+                  notification.type === 'friend' ? 'bg-green-500/10 text-green-500' :
+                  'bg-blue-500/10 text-blue-500'
+                }`}>
+                  {notification.type === 'achievement' ? '🏆' :
+                   notification.type === 'friend' ? '👥' : '🎮'}
+                </div>
+                <div className="flex-1">
+                  <p className={isDark ? 'text-white' : 'text-gray-900'}>{notification.message}</p>
+                  <p className={isDark ? 'text-gray-400' : 'text-gray-500'} text-sm>{notification.timestamp}</p>
+                </div>
+                {!notification.read && (
+                  <div className="h-2 w-2 bg-primary rounded-full"></div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+function FriendRequestsPanel({ requests, onClose }) {
+  const { isDark } = useTheme()
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      className={`absolute right-0 mt-2 w-80 ${isDark ? 'bg-[#0b0c2a] border-[#1a1f35]' : 'bg-white border-gray-200'} border rounded-lg shadow-lg py-2`}
+    >
+      <div className={`px-4 py-2 border-b ${isDark ? 'border-[#1a1f35]' : 'border-gray-200'}`}>
+        <div className="flex justify-between items-center">
+          <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Friend Requests</h3>
+          <button onClick={onClose} className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div className="max-h-96 overflow-y-auto">
+        {requests.length === 0 ? (
+          <p className={`text-center py-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No pending friend requests</p>
+        ) : (
+          requests.map((request) => (
+            <div key={request.id} className={`px-4 py-3 hover:bg-${isDark ? 'white/5' : 'gray-50'} transition-colors`}>
+              <div className="flex items-center space-x-3">
+                <img src={request.avatar} alt={request.username} className="w-10 h-10 rounded-full" />
+                <div className="flex-1">
+                  <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{request.username}</h4>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{request.mutualFriends} mutual friends</p>
+                </div>
+                <div className="flex space-x-2">
+                  <button className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm transition-colors">
+                    Accept
+                  </button>
+                  <button className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full text-sm transition-colors">
+                    Decline
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+export default function Navbar({ user }) {
+  const { isDark, toggleTheme } = useTheme()
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showFriendRequests, setShowFriendRequests] = useState(false)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const location = useLocation()
+
+  const navLinks = [
+    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Friends', path: '/friends' },
+    { name: 'Achievements', path: '/achievements' }
+  ]
+
+  const isActivePath = (path) => {
+    return location.pathname === path
+  }
+
+  return (
+    <nav className={`${isDark ? 'bg-[#0b0c2a]/95' : 'bg-white/95'} backdrop-blur-sm border-b ${isDark ? 'border-[#1a1f35]' : 'border-gray-200'} sticky top-0 z-50`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/dashboard" className="flex items-center space-x-2">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-8 h-8 rounded-lg bg-primary/20"
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-primary text-xl font-bold">D</span>
-                </div>
-              </motion.div>
-              <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                DashFriends
-              </span>
-            </Link>
-          </div>
+          {/* Logo and Brand */}
+          <Link to="/" className="flex items-center space-x-3">
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+              DashFriends
+            </span>
+          </Link>
 
-          {/* Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
               <Link
-                key={item.name}
-                to={item.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === item.path
-                    ? 'bg-primary/10 text-primary'
+                key={link.path}
+                to={link.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActivePath(link.path)
+                    ? 'bg-primary text-white'
                     : isDark
-                    ? 'text-gray-300 hover:text-white hover:bg-white/5'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                {item.name}
+                {link.name}
               </Link>
             ))}
           </div>
 
-          {/* Right section */}
+          {/* User Profile and Notifications */}
           <div className="flex items-center space-x-4">
+            {/* Theme Switcher */}
+            <ThemeSwitcher />
+
             {/* Notifications */}
             <div className="relative">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowNotifications(!showNotifications)}
-                className={`p-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} transition-colors relative`}
+              <button
+                onClick={() => {
+                  setShowNotifications(!showNotifications)
+                  setShowFriendRequests(false)
+                  setShowProfileMenu(false)
+                }}
+                className={`p-2 rounded-full ${isDark ? 'text-gray-400 hover:text-white hover:bg-gray-800' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                </svg>
-                {notifications.length > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+                <BellIcon className="h-6 w-6" />
+                {user.notifications.some(n => !n.read) && (
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
                 )}
-              </motion.button>
+              </button>
 
-              {/* Notifications dropdown */}
-              {showNotifications && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`absolute right-0 mt-2 w-80 rounded-lg shadow-lg ${
-                    isDark ? 'bg-[#1a1f35] border border-[#2a2f45]' : 'bg-white border border-gray-200'
-                  } py-1 z-50`}
-                >
-                  <div className="px-4 py-2 border-b border-gray-200">
-                    <h3 className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      Notifications
-                    </h3>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-4 py-3 ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}
-                      >
-                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          {notification.title}
-                        </p>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-primary mt-1">{notification.time}</p>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {showNotifications && (
+                  <NotificationsPanel
+                    notifications={user.notifications}
+                    onClose={() => setShowNotifications(false)}
+                  />
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Settings */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`p-2 rounded-lg ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} transition-colors`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-              </svg>
-            </motion.button>
-
-            {/* User menu */}
+            {/* Friend Requests */}
             <div className="relative">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2"
+              <button
+                onClick={() => {
+                  setShowFriendRequests(!showFriendRequests)
+                  setShowNotifications(false)
+                  setShowProfileMenu(false)
+                }}
+                className={`p-2 rounded-full ${isDark ? 'text-gray-400 hover:text-white hover:bg-gray-800' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+              >
+                <UserGroupIcon className="h-6 w-6" />
+                {user.friendRequests.length > 0 && (
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showFriendRequests && (
+                  <FriendRequestsPanel
+                    requests={user.friendRequests}
+                    onClose={() => setShowFriendRequests(false)}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* User Profile */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowProfileMenu(!showProfileMenu)
+                  setShowNotifications(false)
+                  setShowFriendRequests(false)
+                }}
+                className="flex items-center space-x-2 group"
               >
                 <img
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=current-user"
-                  alt="Current user"
-                  className="w-8 h-8 rounded-full"
+                  src={user.avatar}
+                  alt={user.username}
+                  className="w-8 h-8 rounded-full ring-2 ring-primary/30 group-hover:ring-primary/50 transition-all"
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </motion.button>
+                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {user.username}
+                </span>
+              </button>
 
-              {/* User menu dropdown */}
-              {showUserMenu && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg ${
-                    isDark ? 'bg-[#1a1f35] border border-[#2a2f45]' : 'bg-white border border-gray-200'
-                  } py-1 z-50`}
-                >
-                  <Link
-                    to="/profile"
-                    className={`block px-4 py-2 text-sm ${
-                      isDark ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-100'
-                    } transition-colors`}
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg ${
+                      isDark ? 'bg-[#1a1b3a]' : 'bg-white'
+                    } ring-1 ring-black ring-opacity-5 py-1`}
                   >
-                    Your Profile
-                  </Link>
-                  <Link
-                    to="/settings"
-                    className={`block px-4 py-2 text-sm ${
-                      isDark ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-100'
-                    } transition-colors`}
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    className={`block w-full text-left px-4 py-2 text-sm ${
-                      isDark ? 'text-red-400 hover:bg-white/5' : 'text-red-600 hover:bg-gray-100'
-                    } transition-colors`}
-                  >
-                    Sign out
-                  </button>
-                </motion.div>
-              )}
+                    <Link
+                      to="/profile"
+                      className={`block px-4 py-2 text-sm ${
+                        isDark
+                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      View Profile
+                    </Link>
+                    <Link
+                      to="/profile/settings"
+                      className={`block px-4 py-2 text-sm ${
+                        isDark
+                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      Profile Settings
+                    </Link>
+                    <hr className={`my-1 ${isDark ? 'border-gray-800' : 'border-gray-200'}`} />
+                    <button
+                      className={`block w-full text-left px-4 py-2 text-sm ${
+                        isDark
+                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                      onClick={() => {
+                        setShowProfileMenu(false)
+                        // Add sign out logic here
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
       </div>
     </nav>
   )
-} 
+}
