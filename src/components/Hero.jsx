@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import ParticleBackground from './ParticleBackground';
 
 const Hero = () => {
@@ -51,25 +52,29 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-lg font-medium text-base w-full sm:w-auto
-                transition-all duration-300 relative overflow-hidden group"
-            >
-              <span className="relative z-10">Get started for free</span>
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#9333EA] opacity-0 
-                group-hover:opacity-100 transition-opacity duration-300"></div>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-white/5 text-white rounded-lg font-medium text-base w-full sm:w-auto
-                hover:bg-white/10 border border-white/10 backdrop-blur-sm
-                transition-all duration-300"
-            >
-              Live demo →
-            </motion.button>
+            <Link to="/signup">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-lg font-medium text-base w-full sm:w-auto
+                  transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10">Get started for free</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#9333EA] opacity-0 
+                  group-hover:opacity-100 transition-opacity duration-300"></div>
+              </motion.button>
+            </Link>
+            <Link to="/demo">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 bg-white/5 text-white rounded-lg font-medium text-base w-full sm:w-auto
+                  hover:bg-white/10 border border-white/10 backdrop-blur-sm
+                  transition-all duration-300"
+              >
+                Live demo →
+              </motion.button>
+            </Link>
           </motion.div>
 
           {/* Stats Section */}

@@ -1,21 +1,19 @@
+import React from 'react';
 import { useTheme } from '../contexts/ThemeContext'
 
-export function Card({ children, className = '' }) {
+function Card({ children, className = '' }) {
   const { isDark } = useTheme()
   
   return (
     <div
-      className={`
-        ${isDark ? 'bg-[#0b0c2a]/50' : 'bg-white'}
-        backdrop-blur-sm
-        rounded-xl
-        p-6
-        shadow-lg
-        ${isDark ? 'shadow-black/5' : 'shadow-gray-200'}
-        ${className}
-      `}
+      className={`rounded-lg shadow-sm ${
+        isDark ? 'bg-[#1a1b3a] shadow-gray-900/10' : 'bg-white shadow-gray-200/50'
+      } ${className}`}
     >
       {children}
     </div>
   )
-} 
+}
+
+export { Card };
+export default Card 

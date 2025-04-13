@@ -12,9 +12,11 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "canvas-confetti": "^1.9.3",
-    "framer-motion": "^12.6.3",
+    "chart.js": "^4.4.8",
+    "framer-motion": "^12.6.5",
     "lucide-react": "^0.487.0",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.0",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.1.2",

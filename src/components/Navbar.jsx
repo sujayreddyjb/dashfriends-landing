@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { BellIcon, UserGroupIcon, XMarkIcon } from '@heroicons/react/24/outline/index.js'
 import { useTheme } from '../contexts/ThemeContext'
 
@@ -135,6 +135,7 @@ export default function Navbar({ user }) {
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navLinks = [
     { name: 'Dashboard', path: '/dashboard' },
@@ -144,6 +145,13 @@ export default function Navbar({ user }) {
 
   const isActivePath = (path) => {
     return location.pathname === path
+  }
+
+  const handleSignOut = () => {
+    // Clear user session
+    localStorage.removeItem('user')
+    // Redirect to login page
+    navigate('/login')
   }
 
   return (
@@ -289,13 +297,10 @@ export default function Navbar({ user }) {
                     <button
                       className={`block w-full text-left px-4 py-2 text-sm ${
                         isDark
-                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          ? 'text-red-400 hover:bg-gray-800 hover:text-red-300'
+                          : 'text-red-600 hover:bg-gray-100 hover:text-red-700'
                       }`}
-                      onClick={() => {
-                        setShowProfileMenu(false)
-                        // Add sign out logic here
-                      }}
+                      onClick={handleSignOut}
                     >
                       Sign Out
                     </button>

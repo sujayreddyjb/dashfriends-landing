@@ -8,8 +8,10 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
+import { useTheme } from '../contexts/ThemeContext'
 
-const AchievementsTimeline = ({ achievements, isDark }) => {
+const AchievementsTimeline = ({ achievements }) => {
+  const { isDark } = useTheme()
   const [hoveredAchievement, setHoveredAchievement] = useState(null)
 
   // Group achievements by month
@@ -71,49 +73,63 @@ const AchievementsTimeline = ({ achievements, isDark }) => {
   }
 
   return (
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={chartData}
-          margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
-          barGap={0}
-          barCategoryGap="20%"
+    <div className="space-y-4">
+      {achievements.map((achievement) => (
+        <motion.div
+          key={achievement.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-lg ${
+            isDark ? 'bg-gray-800/50' : 'bg-gray-50'
+          }`}
         >
-          <XAxis
-            dataKey="month"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: isDark ? '#9CA3AF' : '#4B5563', fontSize: 12 }}
-          />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: isDark ? '#9CA3AF' : '#4B5563', fontSize: 12 }}
-          />
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{ fill: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
-          />
-          <Bar
-            dataKey="legendary"
-            stackId="achievements"
-            fill="#9333EA"
-            radius={[4, 4, 0, 0]}
-          />
-          <Bar
-            dataKey="rare"
-            stackId="achievements"
-            fill="#EAB308"
-            radius={[4, 4, 0, 0]}
-          />
-          <Bar
-            dataKey="common"
-            stackId="achievements"
-            fill="#4F46E5"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 text-2xl">
+              {achievement.icon}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h3 className={`font-medium ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {achievement.title}
+                </h3>
+                <span className={`text-sm ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {achievement.progress}/{achievement.total}
+                </span>
+              </div>
+              <p className={`text-sm mt-1 ${
+                isDark ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                {achievement.description}
+              </p>
+              <div className="mt-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className={`h-1.5 rounded-full ${
+                      achievement.progress === achievement.total
+                        ? 'bg-green-500'
+                        : 'bg-primary'
+                    }`}
+                  />
+                </div>
+              </div>
+              {achievement.unlockedAt && (
+                <p className={`text-xs mt-2 ${
+                  isDark ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      ))}
     </div>
   )
 }

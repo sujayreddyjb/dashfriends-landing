@@ -16,6 +16,7 @@ import WhyUs from './components/WhyUs'
 import Features from './components/Features'
 import Profile from './pages/profile/Profile'
 import ProfileSettings from './pages/profile/ProfileSettings'
+import Demo from './pages/demo/Demo'
 import './styles/animations.css'
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/settings" element={<ProfileSettings />} />
           <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/demo" element={<Demo />} />
         </Routes>
       </Router>
     </ThemeProvider>
